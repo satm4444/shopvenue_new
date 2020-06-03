@@ -86,8 +86,32 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
 
     if (_editedProduct.id != null) {
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
+      try {
+        Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } catch (error) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text("Error Occured"),
+            content: Text("Something has Occured. Porduct couldnt be added"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  setState(
+                    () {
+                      _isLoading = false;
+                    },
+                  );
+                  Navigator.pop(context);
+                },
+                child: Text("Ok"),
+              )
+            ],
+          ),
+        );
+      }
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
@@ -114,15 +138,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ],
           ),
         );
-      } finally {
-        setState(
-          () {
-            _isLoading = false;
-          },
-        );
-        Navigator.pop(context);
       }
     }
+    setState(
+      () {
+        _isLoading = false;
+      },
+    );
+    Navigator.pop(context);
   }
 
   @override
